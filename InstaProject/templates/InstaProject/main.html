@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- material Icon-->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Jquery -->
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+    <title>Hello, world!</title>
+    <style>
+        .modal_overlay {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            /*사용자가 +아이콘을 클릭하면 flex 아니면 none*/
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(1.5px);
+            -webkit-backdrop-filter: blur(1.5px);
+        }
+
+        .modal_window {
+            background: white;
+            backdrop-filter: blur(13.5px);
+            -webkit-backdrop-filter: blur(13.5px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 800px;
+            height: 600px;
+            position: relative;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="position:fixed; width: 100%;">
+        <div class="container-fluid" style="justify-content:space-between; flex-wrap: nowrap; min-width: 1000px;">
+            <a class="navbar-brand" href="#"><img style="width: 100px"
+                    src="https://fontmeme.com/permalink/220901/ce691b2258b97721aeacca02c2ad2faa.png">
+            </a>
+
+            <input class="form-control me-2" style="width: 400px" type="search" placeholder="Search"
+                aria-label="Search">
+            <div style="display: flex;">
+                <span class="material-symbols-outlined">
+                    home
+                </span>
+                <span class="material-symbols-outlined">
+                    send
+                </span>
+                <span id="nav_add_box" class="material-symbols-outlined">
+                    add_box
+                </span>
+                <span class="material-symbols-outlined">
+                    explore
+                </span>
+                <span class="material-symbols-outlined">
+                    favorite
+                </span>
+                <!-- 프로필 이미지 -->
+                <div class="dropdown">
+                    <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div
+                            style="display: flex; flex-direction: row;justify-content: space-between; align-items: center;">
+                            <div style="display: flex;flex-direction: row;">
+                                <div style="width: 25px;
+                                            height: 25px; 
+                                            border-radius: 70%;
+                                            overflow: hidden;">
+                                    <img src="https://m.sleepnsleepmall.com/web/product/medium/202207/be10cef08bff16ef03355be34c8b73e6.jpg"
+                                        style="width: 100%;
+                                        height: 100%;
+                                        object-fit: cover;">
+                                </div>
+                            </div>
+                        </div>
+
+                    </a>
+
+                    <ul class="dropdown-menu" style="left: -149px;">
+                        <li><a class="dropdown-item" href="#">프로필</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="/user/logout">로그아웃</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </nav>
+    <div
+        style="display: flex; flex-direction: row; text-align: center; justify-content: center; padding-top: 60px; background-color:#FAFAFA;">
+        <div style="width: 500px; min-width: 500px; height: 1000px;  margin-right: 300px;">
+            <!--피드박스 시작 지점-->
+            <!--첫 번째 피드박스-->
+            {% for feed in feeds %}
+            <div style="border: solid 1px gray; background-color: white; margin: 15px;">
+                <div style="display: flex; flex-direction: row; align-items: center; margin-left: 20px;">
+                    <div style="width: 50px;
+                                    height: 50px; 
+                                    border-radius: 70%;
+                                    overflow: hidden;">
+                        <img src="{{feed.profile_image}}" style="width: 100%;
+                                height: 100%;
+                                object-fit: cover;">
+                    </div>
+                    <div style="margin-left: 5px;">
+                        {{feed.user_id}}
+                    </div>
+                </div>
+
+                <div>
+                    <img src="{% get_media_prefix %}{{feed.image}}" style="width: 100%;">
+                </div>
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <div style="margin-left: 20px;">
+                        <span class="material-symbols-outlined">
+                            favorite
+                        </span>
+                        <span class="material-symbols-outlined">
+                            chat_bubble
+                        </span>
+                        <span class="material-symbols-outlined">
+                            send
+                        </span>
+                    </div>
+                    <div style="margin-right: 20px;">
+                        <span class="material-symbols-outlined">
+                            bookmark
+                        </span>
+                    </div>
+
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    brungs <b>외 {{feed.like_count}}명이</b> 좋아합니다.
+                </div>
+                <div style="text-align: left; font-size: 16px; margin-left: 20px;">
+                    <b>{{feed.user_id}}</b> {{feed.content}}
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>user_other_user </b>PSY
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>ff_user </b>red velvet
+                </div>
+
+                <div>
+                    <input type="text" style="box-shadow: none; border: none; outline: none;" class="form-control"
+                        aria-describedby="emailHelp" placeholder="댓글 달기 ..">
+                </div>
+            </div>
+
+            <!--두 번째 피드박스-->
+            <!-- <div style="border: solid 1px gray; background-color: white; margin: 15px;">
+                <div style="display: flex; flex-direction: row; align-items: center; margin-left: 20px;">
+                    <div style="width: 50px;
+                                    height: 50px; 
+                                    border-radius: 70%;
+                                    overflow: hidden;">
+                        <img src="https://www.ggjil.com/wys2/file_attach/2019/12/12/1576136980_30640.jpg" style="width: 100%;
+                                height: 100%;
+                                object-fit: cover;">
+                    </div>
+                    <div style="margin-left: 5px;">
+                        user_name
+                    </div>
+                </div>
+
+                <div>
+                    <img src="https://www.ggjil.com/wys2/file_attach/2019/12/12/1576136980_30640.jpg"
+                        style="width: 100%;">
+                </div>
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <div style="margin-left: 20px;">
+                        <span class="material-symbols-outlined">
+                            favorite
+                        </span>
+                        <span class="material-symbols-outlined">
+                            chat_bubble
+                        </span>
+                        <span class="material-symbols-outlined">
+                            send
+                        </span>
+                    </div>
+                    <div style="margin-right: 20px;">
+                        <span class="material-symbols-outlined">
+                            bookmark
+                        </span>
+                    </div>
+
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    brungs <b>외 18명이</b> 좋아합니다.
+                </div>
+                <div style="text-align: left; font-size: 16px; margin-left: 20px;">
+                    <b>user_name </b>JAY
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>user_other_user </b>PSY
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>ff_user </b>red velvet
+                </div>
+
+                <div>
+                    <input type="text" style="box-shadow: none; border: none; outline: none;" class="form-control"
+                        aria-describedby="emailHelp" placeholder="댓글 달기 ..">
+                </div>
+            </div> -->
+            <!--세 번째 피드박스-->
+            <!-- <div style="border: solid 1px gray; background-color: white; margin: 15px;">
+                <div style="display: flex; flex-direction: row; align-items: center; margin-left: 20px;">
+                    <div style="width: 50px;
+                                    height: 50px; 
+                                    border-radius: 70%;
+                                    overflow: hidden;">
+                        <img src="https://newsimg.hankookilbo.com/cms/articlerelease/2021/08/09/e770b4e8-df73-4372-86c1-b913d95bf8d1.jpg"
+                            style="width: 100%;
+                                height: 100%;
+                                object-fit: cover;">
+                    </div>
+                    <div style="margin-left: 5px;">
+                        user_name
+                    </div>
+                </div>
+
+                <div>
+                    <img src="https://newsimg.hankookilbo.com/cms/articlerelease/2021/08/09/e770b4e8-df73-4372-86c1-b913d95bf8d1.jpg"
+                        style="width: 100%;">
+                </div>
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <div style="margin-left: 20px;">
+                        <span class="material-symbols-outlined">
+                            favorite
+                        </span>
+                        <span class="material-symbols-outlined">
+                            chat_bubble
+                        </span>
+                        <span class="material-symbols-outlined">
+                            send
+                        </span>
+                    </div>
+                    <div style="margin-right: 20px;">
+                        <span class="material-symbols-outlined">
+                            bookmark
+                        </span>
+                    </div>
+
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    brungs <b>외 18명이</b> 좋아합니다.
+                </div>
+                <div style="text-align: left; font-size: 16px; margin-left: 20px;">
+                    <b>user_name </b>JAY
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>user_other_user </b>PSY
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>ff_user </b>red velvet
+                </div>
+
+                <div>
+                    <input type="text" style="box-shadow: none; border: none; outline: none;" class="form-control"
+                        aria-describedby="emailHelp" placeholder="댓글 달기 ..">
+                </div>
+            </div> -->
+            <!--네 번째 피드박스-->
+            <!-- <div style="border: solid 1px gray; background-color: white; margin: 15px;">
+
+                <div style="display: flex; flex-direction: row; align-items: center; margin-left: 20px;">
+                    <div style="width: 50px;
+                                    height: 50px; 
+                                    border-radius: 70%;
+                                    overflow: hidden;">
+                        <img src="http://image.genie.co.kr/Y/IMAGE/IMG_ALBUM/082/662/688/82662688_1651196114166_1_600x600.JPG"
+                            style="width: 100%;
+                                height: 100%;
+                                object-fit: cover;">
+                    </div>
+                    <div style="margin-left: 5px;">
+                        user_name
+                    </div>
+                </div>
+
+                <div>
+                    <img src="http://image.genie.co.kr/Y/IMAGE/IMG_ALBUM/082/662/688/82662688_1651196114166_1_600x600.JPG"
+                        style="width: 100%;">
+                </div>
+                <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <div style="margin-left: 20px;">
+                        <span class="material-symbols-outlined">
+                            favorite
+                        </span>
+                        <span class="material-symbols-outlined">
+                            chat_bubble
+                        </span>
+                        <span class="material-symbols-outlined">
+                            send
+                        </span>
+                    </div>
+                    <div style="margin-right: 20px;">
+                        <span class="material-symbols-outlined">
+                            bookmark
+                        </span>
+                    </div>
+
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    brungs <b>외 18명이</b> 좋아합니다.
+                </div>
+                <div style="text-align: left; font-size: 16px; margin-left: 20px;">
+                    <b>user_name </b>JAY
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>user_other_user </b>PSY
+                </div>
+                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>ff_user </b>red velvet
+                </div>
+
+                <div>
+                    <input type="text" style="box-shadow: none; border: none; outline: none;" class="form-control"
+                        aria-describedby="emailHelp" placeholder="댓글 달기 ..">
+                </div>
+            </div> -->
+            {% endfor %}
+        </div>
+        <!--피드박스 종료지점-->
+
+        <div style="width: 400px; height: 1000px; position: fixed; left: 62%;">
+            <div>
+                <div style="display: flex; flex-direction: row; align-items: center; margin-left: 20px;">
+                    <div style="width: 65px;
+                                    height: 65px; 
+                                    border-radius: 70%;
+                                    overflow: hidden;">
+                        <img src="https://t3.daumcdn.net/thumb/R720x0.fpng/?fname=http://t1.daumcdn.net/brunch/service/user/76sF/image/_5hOF9Ri5U_nuy7wWfYkTntd_VY.png"
+                            style="width: 100%;
+                                height: 100%;
+                                object-fit: cover;">
+                    </div>
+                    <div style="margin-left: 15px; text-align: left;">
+                        <div style="font-weight: bold;">
+                            {{user.nickname}}
+                        </div>
+                        <div style="color: gray;">
+                            {{user.name}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                <div style="font-weight: bold; color: gray; margin-left: 20px;">
+                    회원님을 위한 추천
+                </div>
+
+                <div>
+                    <a href="#" style="font-weight: bold; text-decoration: none; color: black;">모두보기</a>
+                </div>
+            </div>
+
+            <div>
+                <div
+                    style="display: flex; flex-direction: row;justify-content: space-between; align-items: center; margin-left: 20px;">
+                    <div style="display: flex;flex-direction: row;">
+                        <div style="width: 35px;
+                        height: 35px; 
+                        border-radius: 70%;
+                        overflow: hidden;">
+                            <img src="https://m.sleepnsleepmall.com/web/product/medium/202207/be10cef08bff16ef03355be34c8b73e6.jpg"
+                                style="width: 100%;
+                    height: 100%;
+                    object-fit: cover;">
+                        </div>
+                        <div style="margin-left: 15px; text-align: left;">
+                            <div style="font-weight: bold; font-size: 14px;">
+                                IU_WW
+                            </div>
+                            <div style="color: gray; font-size: 14px;">
+                                -님을 팔로우합니다.
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="#"
+                            style="font-weight: bold; text-decoration: none; color: skyblues; font-size:14px;">팔로우</a>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div
+                    style="display: flex; flex-direction: row;justify-content: space-between; align-items: center; margin-left: 20px;">
+                    <div style="display: flex;flex-direction: row;">
+                        <div style="width: 35px;
+                        height: 35px; 
+                        border-radius: 70%;
+                        overflow: hidden;">
+                            <img src="https://spnimage.edaily.co.kr/images/Photo/files/NP/S/2020/09/PS20092300066.jpg"
+                                style="width: 100%;
+                    height: 100%;
+                    object-fit: cover;">
+                        </div>
+                        <div style="margin-left: 15px; text-align: left;">
+                            <div style="font-weight: bold; font-size: 14px;">
+                                unkown
+                            </div>
+                            <div style="color: gray; font-size: 14px;">
+                                -님이 외 31명이 팔로우합니다.
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="#"
+                            style="font-weight: bold; text-decoration: none; color: skyblues; font-size:14px;">팔로우</a>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div
+                    style="display: flex; flex-direction: row;justify-content: space-between; align-items: center; margin-left: 20px;">
+                    <div style="display: flex;flex-direction: row;">
+                        <div style="width: 35px;
+                        height: 35px; 
+                        border-radius: 70%;
+                        overflow: hidden;">
+                            <img src="https://img.hankyung.com/photo/202111/p1065590921493731_758_thum.jpg" style="width: 100%;
+                    height: 100%;
+                    object-fit: cover;">
+                        </div>
+                        <div style="margin-left: 15px; text-align: left;">
+                            <div style="font-weight: bold; font-size: 14px;">
+                                __Taehyeon__
+                            </div>
+                            <div style="color: gray; font-size: 14px;">
+                                instagram 신규가입
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="#"
+                            style="font-weight: bold; text-decoration: none; color: skyblues; font-size:14px;">팔로우</a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div style="margin-top: 50px; font-size: 12px; color: gray; text-align: left; margin-left: 20px;">
+                소개 도움말 홍보센터 API..
+                <br>
+                정보 보도 자료 저작권문의하기 크리에이터 광고개발자
+                <br>
+                약관개인정보처리 방침정책 및 안전
+            </div>
+            <div style="margin-top: 20px; font-size: 18px; color: gray; text-align: left; margin-left: 20px;">
+                2022-08-18 INSTAGRAM CLONE CODING
+            </div>
+
+        </div>
+    </div>
+
+
+    <!--사진 업로드 모달 div-->
+    <div id="img_modal" class="modal_overlay">
+        <div class="modal_window">
+            <div
+                style="border-bottom: dashed 3px gray; display: flex; flex-direction: row; justify-content: space-between;">
+                <div style="width: 40px; background-color: gray;">
+
+                </div>
+                <div>
+                    이미지 업로드
+                </div>
+                <div>
+                    <span class="material-symbols-outlined">
+                        close
+                    </span>
+                </div>
+            </div>
+
+            <div class="img_upload" style=" width: 780px; height: 540px; margin-top: 10px;">
+
+            </div>
+        </div>
+    </div>
+
+    <!--글쓰기 모달 div-->
+    <div id="wirte_modal" class="modal_overlay">
+        <div class="modal_window">
+            <div
+                style="border-bottom: dashed 3px gray; display: flex; flex-direction: row; justify-content: space-between;">
+                <div style="width: 40px; background-color: gray;">
+
+                </div>
+                <div>
+                    이미지 업로드
+                </div>
+                <div>
+                    <span class="material-symbols-outlined">
+                        close
+                    </span>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: row;">
+                <div class="img_upload" style=" width: 500px; height: 540px; margin-top: 10px;">
+
+                </div>
+                <div style="border-left: dashed 3px gray;">
+                    <div>
+                        <textarea id="feed_create_content" class="form-control" style="width: 276px; height: 400px;"
+                            id="exampleFormControlTextarea1" rows="5"></textarea>
+                    </div>
+                    <button id="feed_create_btn" type="button" style="width: 100%;"
+                        class="btn btn-primary">공유하기</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <!-- Optional JavaScript; choose one of the two! -->
+    <script>
+        /*files 전역변수 선언*/
+        let files;
+
+        /*nav_add_box를 클릭했을 때*/
+        $('#nav_add_box').click(function () {
+            $('#img_modal').css({
+                display: 'flex'
+            });
+            /*바디객체를 가져옴*/
+            $(document.body).css({
+                overflow: 'hidden'   /*스크롤(가로,세로) 히든*/
+            });
+        });
+        /*feed_create_btn버튼 클릭 후 
+          데이터를 ajax를 사용해서 서버로 보내는 소스
+        */
+        $('#feed_create_btn').click(function () {
+            alert('공유하기 버튼 클릭');
+
+            let file = files[0];
+            let image = files[0].name;
+            let content = $('#feed_create_content').val();
+            let user_id = "Sim_918";
+            let profile_image = "https://m.sleepnsleepmall.com/web/product/medium/202207/be10cef08bff16ef03355be34c8b73e6.jpg";
+
+            //폼 데이터 형테
+            let fd = new FormData();
+
+            fd.append('file', file);
+            fd.append('image', image);
+            fd.append('content', content);
+            fd.append('user_id', user_id);
+            fd.append('profile_image', profile_image);
+
+            $.ajax({
+                url: "/content/upload",
+                data: fd,
+                method: "POST",
+                processData: false,
+                contentType: false,
+
+                success: function (data) {
+                    console.log("성공");
+                },
+                error: function (request, status, error) {
+                    console.log("실패");
+                },
+                complete: function () {
+                    console.log("완료");
+                    location.replace("/main"); //업로드가 됬을 때 메인페이지로 가는 코드
+                }
+            });
+        });
+
+        /*이미지 드래그 앤 드롭*/
+        $('.img_upload')
+            .on("dragover", dragOver)
+            .on("dragleave", dragOver)
+            .on("drop", uploadFiles);
+
+        function dragOver(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (e.type == "dragover") {
+                $(e.target).css({
+                    "background-color": "gray",
+                    "outline-offset": "-20px"
+                });
+            } else {
+                $(e.target).css({
+                    "outline-offset": "-10px"
+                });
+            }
+
+        }
+
+        function uploadFiles(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+
+            e.dataTransfer = e.originalEvent.dataTransfer; //2
+            files = e.target.files || e.dataTransfer.files;
+            console.log("파일 업로드" + files[0].name);
+            if (files.length > 1) {
+                alert('하나만 올려라.');
+                return;
+            }
+
+            if (files[0].type.match(/image.*/)) {
+
+                $('#img_modal').css({
+                    display: 'none'
+                });
+                $('#wirte_modal').css({
+                    display: 'flex'
+                });
+
+                $('.img_upload').css({
+                    "background-image": "url(" + window.URL.createObjectURL(files[0]) + ")",
+                    "outline": "none",
+                    "background-size": "100%",
+                    "background-repeat": "no-repeat",
+                    "background-position": "center"
+                });
+            } else {
+                alert('이미지가 아닙니다.');
+                return;
+            }
+
+        }
+        /*제이쿼리를 이용해 nav_add_box를 클릭하면 함수가 실행됨
+
+        선택자가 id면(이번트가 단수개면)
+        $('#선택자').이벤트(함수 (){
+            실행코드
+        });
+        선택자가 class면(이벤트가 복수개면)
+        $('.선택자').이벤트(함수 (){
+            실행코드
+        });
+
+        */
+    </script>
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    -->
+</body>
+
+</html>
