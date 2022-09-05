@@ -14,7 +14,7 @@ class Main(APIView):
         feed_list=Feed.objects.all().order_by('-id') #models.py에 있는 Feed의 모든객체를 feed_list에 할당
                                     #order_by-> id를 역순으로 가져옴
         email=request.session.get('email')
-        print('로그인 한 사람: ',request.session.get('email'))
+        #print('로그인 한 사람: ',request.session.get('email'))
         
         #로그인을 안한 상태로 main을 들어왔을 때(회원정보가 없을때)
         if email is None:
@@ -49,3 +49,19 @@ class UploadFeed(APIView):
 
         #http 응답코드 200은 성공
         return Response(status=200)
+
+class Profile(APIView):
+    def get(self,request):
+        email=request.session.get('email')
+        #print('로그인 한 사람: ',request.session.get('email'))
+        
+        #로그인을 안한 상태로 main을 들어왔을 때(회원정보가 없을때)
+        if email is None:
+            return render(request,"user/login.html")
+
+        user=User.objects.filter(email=email).first()
+        # #이메일 주소가 회원이 아닐때
+        if user is None:
+            return render(request,"user/login.html")
+
+        return render(request,"content/profile.html",context=dict(user=user,email=email))

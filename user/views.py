@@ -4,6 +4,9 @@ from rest_framework.views import APIView
 from rest_framework.views import Response
 from .models import User
 from django.contrib.auth.hashers import make_password,check_password
+from uuid import uuid4
+import os
+from InstaProject.settings import MEDIA_ROOT
 
 
 # Create your views here.
@@ -23,7 +26,7 @@ class Join(APIView):
                             name=name,
                             password=make_password(password),
                             #장고안에 있는 hash모듈을 이용해 패스워드를 암호화한다.
-                            profile_image="default_profile.jpg")
+                            profile_image="default_profile.png")
         return Response(status=200)
 
 class Login(APIView):
@@ -53,3 +56,30 @@ class LogOut(APIView):
     def get(self,request):
         request.session.flush()
         return render(request,"user/login.html")
+
+
+class UploadProfile(APIView):
+    def post(self,request):
+
+        #파일 불러오는 코드
+        file=request.FILES['file']
+        email=request.data.get('email')
+        uuid_name=uuid4().hex        #이미지파일을 서버로 저장하기위해 이미지 주소를 16진수로 변환 하는 작업
+
+        save_path=os.path.join(MEDIA_ROOT,uuid_name)    #저장경로는 settigs.py에 있는 MEDIA_ROOT를 통해 uuid_name으로 /media에 저장
+
+        #파일을 실제로 저장하는 코드
+        with open(save_path,'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
+
+        profile_image=uuid_name
+       
+        
+        user=User.objects.filter(email=email).first()
+
+        user.profile_image=profile_image
+        user.save()
+
+        #http 응답코드 200은 성공
+        return Response(status=200)
