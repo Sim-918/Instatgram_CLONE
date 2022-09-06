@@ -52,16 +52,16 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light" style="position:fixed; width: 100%;">
         <div class="container-fluid" style="justify-content:space-between; flex-wrap: nowrap; min-width: 1000px;">
-            <a class="navbar-brand" href="/main/"><img style="width: 100px"
+            <a class="navbar-brand" href="main"><img style="width: 100px"
                     src="https://fontmeme.com/permalink/220901/ce691b2258b97721aeacca02c2ad2faa.png">
             </a>
 
             <input class="form-control me-2" style="width: 400px" type="search" placeholder="Search"
                 aria-label="Search">
             <div style="display: flex;">
-                <span class="material-symbols-outlined">
-                    home
-                </span>
+                <a href="main" style="color: black;"><span class="material-symbols-outlined" type="button">
+                        home
+                    </span></a>
                 <span class="material-symbols-outlined">
                     send
                 </span>
@@ -84,8 +84,7 @@
                                             height: 25px; 
                                             border-radius: 80%;
                                             overflow: hidden;">
-                                    <img src="{% get_media_prefix %}{{user.profile_image}}"
-                                        style="width: 100%;
+                                    <img src="{% get_media_prefix %}{{user.profile_image}}" style="width: 100%;
                                         height: 100%;
                                         object-fit: cover;">
                                 </div>
@@ -117,8 +116,7 @@
                     height: 175px; 
                     border-radius: 70%;
                     overflow: hidden;">
-                    <img src="{% get_media_prefix %}{{user.profile_image}}"
-                        style="width: 100%;
+                    <img src="{% get_media_prefix %}{{user.profile_image}}" style="width: 100%;
                 height: 100%;
                 object-fit: cover;">
                 </div>
@@ -130,12 +128,12 @@
                     {{user.nickname}}
                 </div>
                 <button id="btn_profile_upload" style=" margin-right: 40px">프로필 편집</button>
-                <input type="file" id="input_fileupload"onchange="profile_upload();"/>
+                <input type="file" id="input_fileupload" onchange="profile_upload();" style="display: none;" />
                 <span class="material-symbols-outlined" type="button">
                     settings
                 </span>
             </div>
-            
+
             <div style="margin-bottom: 10px;">
                 게시물 13 팔로워 55 팔로우 90
             </div>
@@ -151,14 +149,14 @@
         <div class="modal_window">
             <div
                 style="border-bottom: dashed 3px gray; display: flex; flex-direction: row; justify-content: space-between;">
-                <div style="width: 40px; background-color: gray;">
+                <div style="width: 40px;">
 
                 </div>
                 <div>
                     이미지 업로드
                 </div>
                 <div>
-                    <span class="material-symbols-outlined">
+                    <span class="modal_close material-symbols-outlined" type="button">
                         close
                     </span>
                 </div>
@@ -175,14 +173,14 @@
         <div class="modal_window">
             <div
                 style="border-bottom: dashed 3px gray; display: flex; flex-direction: row; justify-content: space-between;">
-                <div style="width: 40px; background-color: gray;">
+                <div style="width: 40px;">
 
                 </div>
                 <div>
                     이미지 업로드
                 </div>
                 <div>
-                    <span class="material-symbols-outlined">
+                    <span class="modal_close material-symbols-outlined" type="button">
                         close
                     </span>
                 </div>
@@ -211,7 +209,14 @@
     <script>
         /*files 전역변수 선언*/
         let files;
-
+        $('.modal_close').click(function () {
+            $('#img_modal').css({
+                display: 'none'
+            });
+            $('#wirte_modal').css({
+                display: 'none'
+            });
+        });
         /*nav_add_box를 클릭했을 때*/
         $('#nav_add_box').click(function () {
             $('#img_modal').css({
@@ -231,8 +236,8 @@
             let file = files[0];
             let image = files[0].name;
             let content = $('#feed_create_content').val();
-            let user_id = "Sim_918";
-            let profile_image = "https://m.sleepnsleepmall.com/web/product/medium/202207/be10cef08bff16ef03355be34c8b73e6.jpg";
+            let user_id = "{{user.nickname}}";
+            let profile_image = "{{user.profile_image}}";
 
             //폼 데이터 형테
             let fd = new FormData();
@@ -320,19 +325,19 @@
             }
 
         }
-        $('#btn_profile_upload').click(function(){
+        $('#btn_profile_upload').click(function () {
             $('#input_fileupload').click();
 
         });
-        function profile_upload(){        
+        function profile_upload() {
             let file = $('#input_fileupload')[0].files[0];
-            let email= "{{user.email}}";
+            let email = "{{user.email}}";
             //폼 데이터 형테
             let fd = new FormData();
 
             fd.append('file', file);
             fd.append('email', email);
-            
+
             $.ajax({
                 url: "/user/profile/upload",
                 data: fd,
