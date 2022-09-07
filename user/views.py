@@ -26,7 +26,7 @@ class Join(APIView):
                             name=name,
                             password=make_password(password),
                             #장고안에 있는 hash모듈을 이용해 패스워드를 암호화한다.
-                            profile_image="default_profile.png")
+                            profile_image="default_profile.PNG")
         return Response(status=200)
 
 class Login(APIView):

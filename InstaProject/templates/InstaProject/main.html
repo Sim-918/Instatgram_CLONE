@@ -127,7 +127,7 @@
                                 object-fit: cover;">
                     </div>
                     <div style="margin-left: 5px;">
-                        {{feed.user_id}}
+                        {{feed.nickname}}
                     </div>
                 </div>
 
@@ -158,16 +158,16 @@
                 </div>
                 <div style="text-align: left; font-size: 16px; margin-left: 20px;">
                     <b>{{feed.user_id}}</b> {{feed.content}}
+                {% for reply in feed.reply_list %}
+                    <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <b>{{reply.nickname}}</b> {{reply.reply_content}}
                 </div>
-                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
-                    <b>user_other_user </b>PSY
+                {% endfor %}
+                
                 </div>
-                <div style="text-align: left; font-size: 14px; margin-left: 20px;">
-                    <b>ff_user </b>red velvet
-                </div>
-
+                
                 <div>
-                    <input type="text" style="box-shadow: none; border: none; outline: none;" class="form-control"
+                    <input type="text" style="box-shadow: none; border-top-width: solid; outline: none;" class="form-control"
                         aria-describedby="emailHelp" placeholder="댓글 달기 ..">
                 </div>
             </div>
@@ -577,18 +577,14 @@
             let file = files[0];
             let image = files[0].name;
             let content = $('#feed_create_content').val();
-            let user_id = "{{user.nickname}}";
-            let profile_image = "{{user.profile_image}}";
-
+      
             //폼 데이터 형테
             let fd = new FormData();
 
             fd.append('file', file);
             fd.append('image', image);
             fd.append('content', content);
-            fd.append('user_id', user_id);
-            fd.append('profile_image', profile_image);
-
+            
             $.ajax({
                 url: "/content/upload",
                 data: fd,
