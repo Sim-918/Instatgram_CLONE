@@ -25,10 +25,11 @@ class Main(APIView):
 
                 reply_list.append(dict(
                                         reply_content=reply.reply_content,
-                                        nickname=User.nickname
+                                        nickname=user.nickname
                                          ))
 
-            feed_list.append(dict(image=feed.image,
+            feed_list.append(dict(id=feed.id,
+                                  image=feed.image,
                                   content=feed.content,
                                   like_count=feed.like_count,
                                   profile_image=user.profile_image,

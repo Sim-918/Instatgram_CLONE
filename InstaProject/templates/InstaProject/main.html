@@ -157,19 +157,25 @@
                     brungs <b>외 {{feed.like_count}}명이</b> 좋아합니다.
                 </div>
                 <div style="text-align: left; font-size: 16px; margin-left: 20px;">
-                    <b>{{feed.user_id}}</b> {{feed.content}}
+                    <b>{{feed.user_name}}</b> {{feed.content}}
                 {% for reply in feed.reply_list %}
-                    <div style="text-align: left; font-size: 14px; margin-left: 20px;">
+                    <div style="text-align: left; font-size: 14px;">
                     <b>{{reply.nickname}}</b> {{reply.reply_content}}
                 </div>
                 {% endfor %}
                 
                 </div>
                 
-                <div>
-                    <input type="text" style="box-shadow: none; border-top-width: solid; outline: none;" class="form-control"
+                <div style="display: flex; flex-direction: row; align-items: center;" >
+                    <input id="reply_{{feed.id}}" type="text" style="box-shadow: none; border-top-width: solid; outline: none;" class="form-control"
                         aria-describedby="emailHelp" placeholder="댓글 달기 ..">
+                    <!--여기서 게시의 대한 div를 feed.id로 줌으로써 클릭될 때 누른 id값의 대해 댓글업로드-->
+                    <!--input id도 feed.id이기 때문에 게시div id와 input id가 같으면 게시가 되도록-->
+                    <div feed_id="{{feed.id}}" class="upload_reply" type="button" style="width:50px; color: cornflowerblue; font-weight: bold;">
+                        게시
+                    </div>
                 </div>
+                
             </div>
 
             <!--두 번째 피드박스-->
@@ -549,6 +555,15 @@
     <script>
         /*files 전역변수 선언*/
         let files;
+
+        /*upload_reply(게시)를 클릭했을 때*/
+        $('.upload_reply').click(function(event) {
+            let feed_id=event.target.attributes.getNamedItem('feed_id').value;
+            let reply_id='reply_'+feed_id;
+            // console.log(reply_id);
+            
+        });
+
         /*modal_cloase를 클릭했을 때*/
         $('.modal_close').click(function () {
             $('#img_modal').css({
