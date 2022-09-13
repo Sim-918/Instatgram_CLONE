@@ -12,6 +12,18 @@ from InstaProject.settings import MEDIA_ROOT
 # Create your views here.
 class Main(APIView):
     def get(self,request):
+        email=request.session.get('email',None)
+        #print('로그인 한 사람: ',request.session.get('email'))
+        
+        #로그인을 안한 상태로 main을 들어왔을 때(회원정보가 없을때)
+        if email is None:
+            return render(request,"user/login.html")
+
+        user=User.objects.filter(email=email).first()
+        # #이메일 주소가 회원이 아닐때
+        if user is None:
+            return render(request,"user/login.html")
+
         feed_object_list=Feed.objects.all().order_by('-id') #models.py에 있는 Feed의 모든객체를 feed_list에 할당
                                     #order_by-> id를 역순으로 가져옴
         feed_list=[]
@@ -28,26 +40,17 @@ class Main(APIView):
                                         nickname=user.nickname
                                          ))
 
+            like_count=Like.objects.filter(feed_id=feed.id,is_like=True).count()
+            is_liked=Like.objects.filter(feed_id=feed.id,email=email,is_like=True).exists()
             feed_list.append(dict(id=feed.id,
                                   image=feed.image,
                                   content=feed.content,
-                                  like_count=feed.like_count,
+                                  like_count=like_count,
                                   profile_image=user.profile_image,
                                   nickname=user.nickname,
-                                  reply_list=reply_list
+                                  reply_list=reply_list,
+                                  is_liked=is_liked,
                                   ))
-
-        email=request.session.get('email',None)
-        #print('로그인 한 사람: ',request.session.get('email'))
-        
-        #로그인을 안한 상태로 main을 들어왔을 때(회원정보가 없을때)
-        if email is None:
-            return render(request,"user/login.html")
-
-        user=User.objects.filter(email=email).first()
-        # #이메일 주소가 회원이 아닐때
-        if user is None:
-            return render(request,"user/login.html")
 
         return render(request,"InstaProject/main.html",context=dict(feeds=feed_list,user=user))     #feed_list는 키:값 형태의 딕션너리형태로 지정
         
@@ -97,5 +100,21 @@ class UploadReply(APIView):
         email=request.session.get("email",None)
 
         Reply.objects.create(feed_id=feed_id,reply_content=reply_content,email=email)
+
+        return Response(status=200)
+
+class TogleLike(APIView):
+    def post(self,request):
+        feed_id=request.data.get("feed_id",None)
+        is_like=request.data.get("is_like",True)
+
+        if is_like ==True or is_like==True:
+            is_like=True
+        else:
+            is_like=False
+
+        email=request.session.get("email",None)
+
+        Like.objects.create(feed_id=feed_id,is_like=is_like,email=email)
 
         return Response(status=200)
