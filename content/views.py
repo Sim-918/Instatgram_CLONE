@@ -106,15 +106,21 @@ class UploadReply(APIView):
 class TogleLike(APIView):
     def post(self,request):
         feed_id=request.data.get("feed_id",None)
-        is_like=request.data.get("is_like",True)
+        favorite_text=request.data.get("favorite_text",True)
 
-        if is_like ==True or is_like==True:
+        if favorite_text =='favorite_border':
             is_like=True
         else:
             is_like=False
 
         email=request.session.get("email",None)
+        
+        like=Like.objects.filter(feed_id=feed_id,email=email).first()
 
-        Like.objects.create(feed_id=feed_id,is_like=is_like,email=email)
+        if like:
+            like.is_like=is_like
+            like.save()
+        else:
+            Like.objects.create(feed_id=feed_id,is_like=is_like,email=email)
 
         return Response(status=200)
