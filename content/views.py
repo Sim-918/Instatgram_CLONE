@@ -42,6 +42,7 @@ class Main(APIView):
 
             like_count=Like.objects.filter(feed_id=feed.id,is_like=True).count()
             is_liked=Like.objects.filter(feed_id=feed.id,email=email,is_like=True).exists()
+            #is_marked=BookMark.objects.filter(feed_id=feed.id,email=email,is_marked=True).exists()
             feed_list.append(dict(id=feed.id,
                                   image=feed.image,
                                   content=feed.content,
@@ -50,6 +51,7 @@ class Main(APIView):
                                   nickname=user.nickname,
                                   reply_list=reply_list,
                                   is_liked=is_liked,
+                                  #is_marked=is_marked,
                                   ))
 
         return render(request,"InstaProject/main.html",context=dict(feeds=feed_list,user=user))     #feed_list는 키:값 형태의 딕션너리형태로 지정
@@ -122,5 +124,27 @@ class TogleLike(APIView):
             like.save()
         else:
             Like.objects.create(feed_id=feed_id,is_like=is_like,email=email)
+
+        return Response(status=200)
+
+class TogleBookmark(APIView):
+    def post(self,request):
+        feed_id=request.data.get("feed_id",None)
+        bookmark_text=request.data.get("bookmark_text",True)
+
+        if bookmark_text =='bookmark_border':
+            is_marked=True
+        else:
+            is_marked=False
+
+        email=request.session.get("email",None)
+        
+        bookmark=BookMark.objects.filter(feed_id=feed_id,email=email).first()
+
+        if bookmark:
+            bookmark.is_marked=is_marked
+            bookmark.save()
+        else:
+            BookMark.objects.create(feed_id=feed_id,is_marked=is_marked,email=email)
 
         return Response(status=200)

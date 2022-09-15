@@ -136,7 +136,7 @@
                 <div style="display: flex; flex-direction: row; justify-content: space-between;">
                     <div style="margin-left: 20px;">
 
-<!--                                                
+                        <!--                                                
                         {% if feed.is_liked %}
                         <span id="favorite_{{feed.id}}" class="favorite material-symbols-outlined" style="font-variation-settings:
                         'FILL' 1" type="button">
@@ -147,14 +147,15 @@
                             favorite_border
                         </span>
                         {% endif %} -->
-                        <span id="favorite_{{feed.id}}" feed_id="{{feed.id}}" class="favorite material-symbols-outlined" type="button">
+                        <span id="favorite_{{feed.id}}" feed_id="{{feed.id}}" class="favorite material-symbols-outlined"
+                            type="button">
                             {% if feed.is_liked %}
                             favorite
                             {% else %}
                             favorite_border
                             {% endif %}
                         </span>
-                        
+
 
                         <span class="material-symbols-outlined">
                             chat_bubble
@@ -164,8 +165,12 @@
                         </span>
                     </div>
                     <div style="margin-right: 20px;">
-                        <span class="material-symbols-outlined" type="button">
+                        <span id="bookmark_{{feed.id}}" feed_id="{{feed.id}}" class="bookmark material-symbols-outlined" type="button">
+                            {% if feed.is_marked %}
                             bookmark
+                            {% else %}
+                            bookmark_border
+                            {% endif %}
                         </span>
                     </div>
 
@@ -576,7 +581,43 @@
     <script>
         /*files 전역변수 선언*/
         let files;
+        /*북마크 클릭했을 때*/
+        $('.bookmark').click(function (event) {
+            let feed_id = event.target.attributes.getNamedItem('feed_id').value;
+            let bookmark_id = event.target.id;
+            let bookmark_text = $.trim($('#' + bookmark_id).html());
 
+            if (bookmark_text == 'bookmark') {
+                $('#' + bookmark_id).html('bookmark_border');
+
+            }
+            else {
+                $('#' + bookmark_id).html('bookmark');
+
+            }
+
+            $.ajax({
+                url: "/content/bookmark",
+                data: {
+                    feed_id: feed_id,
+                    bookmark_text: bookmark_text
+                },
+                method: "POST",
+
+
+                success: function (data) {
+                    console.log("성공");
+                },
+                error: function (request, status, error) {
+                    console.log("에러");
+                },
+                complete: function () {
+                    console.log("보내기");
+                },
+
+            })
+
+        });
         /*좋아요 클릭했을 때*/
         $('.favorite').click(function (event) {
             let feed_id = event.target.attributes.getNamedItem('feed_id').value;
@@ -593,11 +634,11 @@
                 $('#' + favorite_id).html('favorite');
 
             }
-            reloadDivArea(); //함수 실행
- 
-            function reloadDivArea() {
-                $('#favorite_{{feed.id}}').load(location.href+' #favorite_{{feed.id}}');
-            }
+            // reloadDivArea(); //함수 실행
+
+            // function reloadDivArea() {
+            //     $('#favorite_{{feed.id}}').load(location.href+' #favorite_{{feed.id}}');
+            // }
             $.ajax({
                 url: "/content/like",
                 data: {
@@ -663,13 +704,16 @@
 
         });
 
-        /*modal_cloase를 클릭했을 때*/
+        /*modal_close를 클릭했을 때*/
         $('.modal_close').click(function () {
             $('#img_modal').css({
                 display: 'none'
             });
             $('#wirte_modal').css({
                 display: 'none'
+            });
+            $(document.body).css({
+                overflow: 'scroll'   /*스크롤(가로,세로) 히든*/
             });
         });
         /*nav_add_box를 클릭했을 때*/
@@ -686,7 +730,7 @@
           데이터를 ajax를 사용해서 서버로 보내는 소스
         */
         $('#feed_create_btn').click(function () {
-            alert('공유하기 버튼 클릭');
+            alert('업로드 완료!');
 
             let file = files[0];
             let image = files[0].name;

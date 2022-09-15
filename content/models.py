@@ -23,4 +23,4 @@ class Reply(models.Model):
 class BookMark(models.Model):
     feed_id=models.IntegerField(default=0)   #좋아요 수
     email=models.EmailField(default='')         #좋아요를 누른 사람
-    is_maked=models.BooleanField(default=True)
+    is_marked=models.BooleanField(default=True)
